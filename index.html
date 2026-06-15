@@ -3,303 +3,288 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Himalayan Kitchen - Assignment Prototype</title>
+    <title>JSQuest - Interactive Learning Terminal</title>
     <style>
-        /* Modern CSS Presentation Layer */
+        /* CSS styling built directly from the js_quest.jsx design system */
         :root {
-            --brown: #3E2723;
-            --gold: #D4AF37;
-            --paper: #FDFBF7;
-            --text: #2C2520;
+            --bg-dark: #0a0a0f;
+            --grid-color: rgba(255, 255, 255, 0.03);
+            --font-mono: 'Courier New', monospace;
         }
-        
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--paper);
-            color: var(--text);
+            min-height: 100vh;
+            background-color: var(--bg-dark);
+            font-family: var(--font-mono);
+            color: #fff;
             margin: 0;
             padding: 0;
-            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Fixed background grid matrix layout */
+        .grid-bg {
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 24px 20px 80px;
             display: flex;
             flex-direction: column;
+            gap: 18px;
         }
 
-        header {
-            background-color: var(--brown);
-            border-bottom: 4px solid var(--gold);
+        /* Home Layout styling */
+        .home-wrap, .summary-wrap {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 60px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            text-align: center;
+        }
+
+        .badge, .grade-label {
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: #00e5ff;
+            border: 1px solid rgba(0, 229, 255, 0.27);
+            padding: 4px 14px;
+            border-radius: 20px;
+        }
+
+        .hero-title {
+            font-size: clamp(60px, 12vw, 96px);
+            font-weight: 900;
+            margin: 0;
+            letter-spacing: -2px;
+            line-height: 1;
+            text-shadow: 0 0 60px rgba(0, 229, 255, 0.27);
+        }
+
+        .hero-sub { color: #888; font-size: 15px; margin: 0; }
+
+        .level-row, .topic-grid {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .level-pill {
+            border: 1px solid;
+            border-radius: 12px;
+            padding: 12px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .topic-chip {
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.13);
+            color: #888;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .start-btn {
+            margin-top: 12px;
+            background: #00e5ff;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            padding: 16px 40px;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            letter-spacing: 2px;
+            font-family: var(--font-mono);
+        }
+
+        /* Top Bar & Running Timer metrics */
+        .sticky-header {
             position: sticky;
             top: 0;
-            z-index: 1000;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-        }
-
-        .nav-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 1rem;
+            z-index: 10;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 16px;
+            padding: 12px 20px;
+            background: rgba(10, 10, 15, 0.87);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
 
-        .logo h1 {
-            color: var(--gold);
-            margin: 0;
-            font-size: 1.5rem;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-        }
-
-        nav button {
-            background: none;
-            border: none;
-            color: #FFF;
-            padding: 0.6rem 1rem;
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: all 0.2s;
-        }
-
-        nav button.active {
-            color: var(--brown);
-            background-color: var(--gold);
-        }
-
-        main {
-            max-width: 1000px;
-            width: 100%;
-            margin: 2rem auto;
-            padding: 0 1rem;
+        .progress-bar-container {
             flex: 1;
-            box-sizing: border-box;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 2px;
+            overflow: hidden;
         }
 
-        .page-view {
-            display: none;
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 0.4s ease;
         }
 
-        .page-view.active {
-            display: block;
-        }
-
-        /* Hero / Home Styling */
-        .hero {
-            background: linear-gradient(rgba(62, 39, 35, 0.88), rgba(62, 39, 35, 0.88));
-            padding: 4rem 2rem;
-            border-radius: 8px;
-            text-align: center;
-            color: #FFF;
-            margin-bottom: 2rem;
-        }
-
-        .hero h2 { color: var(--gold); font-size: 2.2rem; margin-top: 0; }
-
-        .btn {
-            background-color: var(--gold);
-            color: var(--brown);
-            border: none;
-            padding: 0.8rem 2rem;
+        .timer-box {
+            font-size: 16px;
             font-weight: 700;
-            text-transform: uppercase;
+            border: 1px solid rgba(0, 229, 255, 0.27);
+            border-radius: 8px;
+            padding: 4px 12px;
+        }
+
+        /* Code and Question Panel Blocks */
+        .level-badge {
+            align-self: flex-start;
+            font-size: 11px;
+            letter-spacing: 2px;
+            border: 1px solid;
+            border-radius: 20px;
+            padding: 3px 14px;
+            font-weight: 700;
+        }
+
+        .box-panel {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 16px 20px;
+        }
+
+        .panel-label { font-size: 10px; letter-spacing: 2px; color: #888; margin-bottom: 8px; }
+        
+        .code-display {
+            background: #0d0d18;
+            color: #7fdbff;
+            font-size: 13px;
+            line-height: 1.7;
+            overflow-x: auto;
+            white-space: pre;
+            margin: 0;
+        }
+
+        .option-button {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.13);
+            border-radius: 10px;
+            padding: 14px 18px;
+            text-align: left;
             cursor: pointer;
-            border-radius: 4px;
+            color: #ccc;
+            font-family: var(--font-mono);
+            font-size: 14px;
+            margin-bottom: 10px;
         }
 
-        /* Menu / Gallery Grid Styling */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
-
-        .card {
-            background: #FFF;
-            padding: 1.5rem;
-            border-radius: 6px;
-            border: 1px solid #EFEAE4;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-        }
-
-        .placeholder-img {
-            height: 180px;
-            background-color: #DDD;
+        .option-letter {
+            min-width: 28px; height: 28px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
             border-radius: 6px;
+            border: 1px solid currentColor;
+            font-weight: 800;
         }
 
-        /* Form Styling */
-        .form-box {
-            max-width: 500px;
-            margin: 0 auto;
-            background: #FFF;
-            padding: 2rem;
-            border-radius: 8px;
-            border: 1px solid #EFEAE4;
+        .action-container { display: flex; justify-content: flex-end; margin-top: 15px; }
+        
+        .action-btn {
+            padding: 14px 32px; border-radius: 8px; border: none;
+            font-size: 14px; font-weight: 800; letter-spacing: 1px;
+            font-family: var(--font-mono); cursor: pointer;
         }
 
-        .form-group { margin-bottom: 1.2rem; }
-        .form-group label { display: block; margin-bottom: 0.4rem; font-weight: 600; }
-        .form-group input { width: 100%; padding: 0.7rem; border: 1px solid #CCD1D9; border-radius: 4px; box-sizing: border-box; }
-
-        /* Dev Console Styling */
-        .console-panel {
-            background-color: #1E1E1E;
-            color: #A5D6A7;
-            font-family: monospace;
-            padding: 1.5rem;
-            margin-top: 3rem;
-            border-top: 4px solid var(--gold);
+        .score-circle {
+            width: 140px; height: 140px; border-radius: 50%;
+            border: 3px solid #00e5ff; display: flex; gap: 2px;
+            align-items: center; justify-content: center; background: rgba(0, 229, 255, 0.06);
         }
 
-        .console-log {
-            height: 100px;
-            overflow-y: auto;
-            background: #121212;
-            padding: 0.8rem;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            line-height: 1.5;
-        }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="nav-container">
-            <div class="logo"><h1>Himalayan Kitchen</h1></div>
-            <nav>
-                <button class="nav-btn active" onclick="switchPage('home', this)">Home</button>
-                <button class="nav-btn" onclick="switchPage('menu', this)">Menu</button>
-                <button class="nav-btn" onclick="switchPage('gallery', this)">Gallery</button>
-                <button class="nav-btn" onclick="switchPage('reservation', this)">Reservation</button>
-                <button class="nav-btn" onclick="switchPage('contact', this)">Contact</button>
-            </nav>
-        </div>
-    </header>
+    <div class="grid-bg"></div>
 
-    <main>
-        <div id="home" class="page-view active">
-            <div class="hero">
-                <h2>Taste the Legacy of the Himalayas</h2>
-                <p>Indulge in authentic local recipes crafted right in the heart of Thamel.</p>
-                <button class="btn" onclick="document.querySelector('[onclick*=\'reservation\']').click()">Book A Table</button>
-            </div>
-        </div>
+    <div id="home-screen" class="home-wrap">
+        <div class="badge">INTERMEDIATE → MASTERY</div>
+        <h1 class="hero-title">JS<span style="color:#00e5ff">Quest</span></h1>
+        <p class="hero-sub">24 challenges · 3 levels · 1 hour</p>
+        
+        <div class="level-row" id="home-levels-summary"></div>
+        <div class="topic-grid" id="home-topics-summary"></div>
+        
+        <button class="start-btn" onclick="startQuest()">START QUEST →</button>
+    </div>
 
-        <div id="menu" class="page-view">
-            <h2>Our Heritage Menu</h2>
-            <div class="grid">
-                <div class="card">
-                    <h3>Steamed Chicken Momo</h3>
-                    <p>Traditional parcels served with house sesame-tomato chutney.</p>
-                    <strong style="color: var(--brown)">Rs. 350</strong>
+    <div id="quest-screen" class="hidden">
+        <div class="sticky-header">
+            <div style="flex: 1; display: flex; alignItems: center; gap: 10px;">
+                <div class="progress-bar-container">
+                    <div id="progress-bar-fill" class="progress-bar-fill"></div>
                 </div>
-                <div class="card">
-                    <h3>Thakali Khana Set</h3>
-                    <p>Authentic Nepali thali with lentils, greens, and local ghee rice.</p>
-                    <strong style="color: var(--brown)">Rs. 650</strong>
-                </div>
+                <span id="progress-text" style="color:#888; font-size:12px">0/24</span>
+            </div>
+            <div id="timer-display" class="timer-box">⏱ 60:00</div>
+        </div>
+
+        <div class="container">
+            <div id="quest-level-badge" class="level-badge"></div>
+            <h2 id="quest-title" style="margin:0; font-size: 28px;"></h2>
+
+            <div class="box-panel">
+                <div class="panel-label">Log: CONCEPT</div>
+                <p id="quest-explanation" style="margin:0; font-size:14px; color:#ccc; line-height:1.7;"></p>
+            </div>
+
+            <div class="box-panel" style="background: #0d0d18;">
+                <div class="panel-label">Log: CODE CODE CONTAINER</div>
+                <pre id="quest-code" class="code-display"></pre>
+            </div>
+
+            <div id="quest-question" style="font-size:16px; font-weight:700;"></div>
+
+            <div id="options-container"></div>
+            <div id="feedback-panel" class="box-panel hidden" style="font-weight:700;"></div>
+
+            <div id="keywords-panel" class="box-panel hidden">
+                <div class="panel-label">🔑 KEYWORDS</div>
+                <div id="keywords-container" class="level-row" style="justify-content: flex-start;"></div>
+            </div>
+
+            <div class="action-container">
+                <button id="action-trigger-btn" class="action-btn" onclick="handleActionClick()"></button>
             </div>
         </div>
+    </div>
 
-        <div id="gallery" class="page-view">
-            <h2>Visual Gallery</h2>
-            <div class="grid">
-                <div class="placeholder-img" style="background-color: #8D6E63;">[ image / momo.jpg ]</div>
-                <div class="placeholder-img" style="background-color: #FFB300;">[ image / chowmein.jpg ]</div>
-                <div class="placeholder-img" style="background-color: #A1887F;">[ image / restaurant.jpg ]</div>
-            </div>
-        </div>
-
-        <div id="reservation" class="page-view">
-            <div class="form-box">
-                <h2 style="margin-top:0">Table Reservation Form</h2>
-                <form id="resForm" onsubmit="executeSubmit(event)">
-                    <div class="form-group">
-                        <label>Full Name</label>
-                        <input type="text" id="formName" required placeholder="John Doe">
-                    </div>
-                    <div class="form-group">
-                        <label>Reservation Date</label>
-                        <input type="date" id="formDate" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Number of Guests</label>
-                        <input type="number" id="formGuests" min="1" value="2" required>
-                    </div>
-                    <button type="submit" class="btn" style="width:100%">Commit Booking</button>
-                </form>
-            </div>
-        </div>
-
-        <div id="contact" class="page-view">
-            <h2>Connect With Our Staff</h2>
-            <p><strong>Location:</strong> Chaksibari Marg, Thamel, Kathmandu, Nepal</p>
-            <p><strong>Phone:</strong> +977-1-4215678</p>
-        </div>
-    </main>
-
-    <section class="console-panel">
-        <div style="margin-bottom: 0.5rem; font-weight: bold; display: flex; justify-content: space-between;">
-            <span>🖥️ Execution Runtime Monitor (XAMPP Emulation)</span>
-            <span style="color: var(--gold)">Status: Bound to Port 3306</span>
-        </div>
-        <div class="console-log" id="consoleTerminal">
-            [System] Database connection 'himalayan_kitchen' established dynamically.<br>
-            [System] Prepared statement mapping structures initialized successfully.
-        </div>
-    </section>
-
-    <script>
-        function logMessage(msg) {
-            const terminal = document.getElementById('consoleTerminal');
-            terminal.innerHTML += `<br>> ${msg}`;
-            terminal.scrollTop = terminal.scrollHeight;
-        }
-
-        function switchPage(pageId, btnElement) {
-            // Hide all views
-            document.querySelectorAll('.page-view').forEach(view => view.classList.remove('active'));
-            // Deactivate all buttons
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            
-            // Activate current
-            document.getElementById(pageId).classList.add('active');
-            btnElement.classList.add('active');
-            
-            logMessage(`Navigation routing mapped view layer state to: '${pageId}'`);
-        }
-
-        function executeSubmit(event) {
-            event.preventDefault();
-            
-            const name = document.getElementById('formName').value;
-            const date = new Date(document.getElementById('formDate').value);
-            const guests = document.getElementById('formGuests').value;
-            const today = new Date();
-            today.setHours(0,0,0,0);
-            date.setHours(0,0,0,0);
-
-            if (date < today) {
-                logMessage(`🛑 [JS Validation Error] System blocked past date parameter choice.`);
-                alert("Validation Error: Booking dates cannot be in the past!");
-                return;
-            }
-
-            logMessage(`📩 [POST] Outgoing form payload bound data context: name="${name}"`);
-            logMessage(`🔐 [PHP] Prepared Statement: INSERT INTO reservations (name, date, guests) VALUES (?, ?, ?)`);
-            logMessage(`💾 [SQL] Commit complete. Primary key row committed to memory.`);
-            
-            alert("Success! Check the dark terminal window at the bottom to see your database commands execute!");
-            document.getElementById('resForm').reset();
-        }
-    </script>
-</body>
-</html>
+    <div id="summary-screen" class="summary-wrap hidden">
+        <div id="summary-grade" class="grade-label"></div>
+        <h2 style="font-size:40px; margin:0;">Quest Complete</h2>
