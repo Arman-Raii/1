@@ -1,290 +1,180 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JSQuest - Interactive Learning Terminal</title>
+    <title>Himalayan Kitchen - Live Google Form Reservation</title>
     <style>
-        /* CSS styling built directly from the js_quest.jsx design system */
+        /* CSS Presentation Layer */
         :root {
-            --bg-dark: #0a0a0f;
-            --grid-color: rgba(255, 255, 255, 0.03);
-            --font-mono: 'Courier New', monospace;
+            --brown: #3E2723;
+            --gold: #D4AF37;
+            --paper: #FDFBF7;
+            --text: #2C2520;
         }
-
+        
         body {
-            min-height: 100vh;
-            background-color: var(--bg-dark);
-            font-family: var(--font-mono);
-            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--paper);
+            color: var(--text);
             margin: 0;
             padding: 0;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        /* Fixed background grid matrix layout */
-        .grid-bg {
-            position: fixed;
-            inset: 0;
-            background-image: 
-                linear-gradient(var(--grid-color) 1px, transparent 1px),
-                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
-            background-size: 40px 40px;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .container {
-            position: relative;
-            z-index: 1;
-            max-width: 680px;
-            margin: 0 auto;
-            padding: 24px 20px 80px;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            gap: 18px;
         }
 
-        /* Home Layout styling */
-        .home-wrap, .summary-wrap {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 60px 24px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-            text-align: center;
-        }
-
-        .badge, .grade-label {
-            font-size: 11px;
-            letter-spacing: 3px;
-            color: #00e5ff;
-            border: 1px solid rgba(0, 229, 255, 0.27);
-            padding: 4px 14px;
-            border-radius: 20px;
-        }
-
-        .hero-title {
-            font-size: clamp(60px, 12vw, 96px);
-            font-weight: 900;
-            margin: 0;
-            letter-spacing: -2px;
-            line-height: 1;
-            text-shadow: 0 0 60px rgba(0, 229, 255, 0.27);
-        }
-
-        .hero-sub { color: #888; font-size: 15px; margin: 0; }
-
-        .level-row, .topic-grid {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .level-pill {
-            border: 1px solid;
-            border-radius: 12px;
-            padding: 12px 24px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .topic-chip {
-            font-size: 11px;
-            padding: 3px 10px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.13);
-            color: #888;
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .start-btn {
-            margin-top: 12px;
-            background: #00e5ff;
-            color: #000;
-            border: none;
-            border-radius: 8px;
-            padding: 16px 40px;
-            font-size: 15px;
-            font-weight: 800;
-            cursor: pointer;
-            letter-spacing: 2px;
-            font-family: var(--font-mono);
-        }
-
-        /* Top Bar & Running Timer metrics */
-        .sticky-header {
+        header {
+            background-color: var(--brown);
+            border-bottom: 4px solid var(--gold);
             position: sticky;
             top: 0;
-            z-index: 10;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        .nav-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 1rem;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 16px;
-            padding: 12px 20px;
-            background: rgba(10, 10, 15, 0.87);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
 
-        .progress-bar-container {
-            flex: 1;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.06);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .progress-bar-fill {
-            height: 100%;
-            width: 0%;
-            transition: width 0.4s ease;
-        }
-
-        .timer-box {
-            font-size: 16px;
-            font-weight: 700;
-            border: 1px solid rgba(0, 229, 255, 0.27);
-            border-radius: 8px;
-            padding: 4px 12px;
-        }
-
-        /* Code and Question Panel Blocks */
-        .level-badge {
-            align-self: flex-start;
-            font-size: 11px;
-            letter-spacing: 2px;
-            border: 1px solid;
-            border-radius: 20px;
-            padding: 3px 14px;
-            font-weight: 700;
-        }
-
-        .box-panel {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 12px;
-            padding: 16px 20px;
-        }
-
-        .panel-label { font-size: 10px; letter-spacing: 2px; color: #888; margin-bottom: 8px; }
-        
-        .code-display {
-            background: #0d0d18;
-            color: #7fdbff;
-            font-size: 13px;
-            line-height: 1.7;
-            overflow-x: auto;
-            white-space: pre;
+        .logo h1 {
+            color: var(--gold);
             margin: 0;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
         }
 
-        .option-button {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.13);
-            border-radius: 10px;
-            padding: 14px 18px;
-            text-align: left;
+        nav button {
+            background: none;
+            border: none;
+            color: #FFF;
+            padding: 0.6rem 1rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
             cursor: pointer;
-            color: #ccc;
-            font-family: var(--font-mono);
-            font-size: 14px;
-            margin-bottom: 10px;
+            border-radius: 4px;
+            transition: all 0.2s;
         }
 
-        .option-letter {
-            min-width: 28px; height: 28px;
+        nav button.active {
+            color: var(--brown);
+            background-color: var(--gold);
+        }
+
+        main {
+            max-width: 1000px;
+            width: 100%;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            flex: 1;
+            box-sizing: border-box;
+        }
+
+        .page-view {
+            display: none;
+        }
+
+        .page-view.active {
+            display: block;
+        }
+
+        /* Hero / Home Styling */
+        .hero {
+            background: linear-gradient(rgba(62, 39, 35, 0.88), rgba(62, 39, 35, 0.88));
+            padding: 5rem 2rem;
+            border-radius: 8px;
+            text-align: center;
+            color: #FFF;
+            margin-bottom: 2rem;
+        }
+
+        .hero h2 { color: var(--gold); font-size: 2.5rem; margin-top: 0; }
+        .hero p { font-size: 1.2rem; color: #EFEAE4; }
+
+        .btn {
+            background-color: var(--gold);
+            color: var(--brown);
+            border: none;
+            padding: 0.8rem 2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #f7d046;
+        }
+
+        /* Iframe Display Container for Google Forms */
+        .iframe-wrapper {
             display: flex;
-            align-items: center;
             justify-content: center;
-            border-radius: 6px;
-            border: 1px solid currentColor;
-            font-weight: 800;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border: 1px solid #EFEAE4;
         }
 
-        .action-container { display: flex; justify-content: flex-end; margin-top: 15px; }
-        
-        .action-btn {
-            padding: 14px 32px; border-radius: 8px; border: none;
-            font-size: 14px; font-weight: 800; letter-spacing: 1px;
-            font-family: var(--font-mono); cursor: pointer;
+        iframe {
+            max-width: 100%;
+            border: none;
         }
-
-        .score-circle {
-            width: 140px; height: 140px; border-radius: 50%;
-            border: 3px solid #00e5ff; display: flex; gap: 2px;
-            align-items: center; justify-content: center; background: rgba(0, 229, 255, 0.06);
-        }
-
-        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div class="grid-bg"></div>
+    <header>
+        <div class="nav-container">
+            <div class="logo"><h1>Himalayan Kitchen</h1></div>
+            <nav>
+                <button class="nav-btn active" onclick="switchPage('home', this)">Home</button>
+                <button class="nav-btn" onclick="switchPage('reservation', this)">Reservation</button>
+            </nav>
+        </div>
+    </header>
 
-    <div id="home-screen" class="home-wrap">
-        <div class="badge">INTERMEDIATE → MASTERY</div>
-        <h1 class="hero-title">JS<span style="color:#00e5ff">Quest</span></h1>
-        <p class="hero-sub">24 challenges · 3 levels · 1 hour</p>
-        
-        <div class="level-row" id="home-levels-summary"></div>
-        <div class="topic-grid" id="home-topics-summary"></div>
-        
-        <button class="start-btn" onclick="startQuest()">START QUEST →</button>
-    </div>
-
-    <div id="quest-screen" class="hidden">
-        <div class="sticky-header">
-            <div style="flex: 1; display: flex; alignItems: center; gap: 10px;">
-                <div class="progress-bar-container">
-                    <div id="progress-bar-fill" class="progress-bar-fill"></div>
-                </div>
-                <span id="progress-text" style="color:#888; font-size:12px">0/24</span>
+    <main>
+        <div id="home" class="page-view active">
+            <div class="hero">
+                <h2>Taste the Legacy of the Himalayas</h2>
+                <p>Indulge in authentic local recipes crafted right in the heart of Thamel.</p>
+                <button class="btn" onclick="document.querySelectorAll('.nav-btn')[1].click()">Book A Table</button>
             </div>
-            <div id="timer-display" class="timer-box">⏱ 60:00</div>
         </div>
 
-        <div class="container">
-            <div id="quest-level-badge" class="level-badge"></div>
-            <h2 id="quest-title" style="margin:0; font-size: 28px;"></h2>
-
-            <div class="box-panel">
-                <div class="panel-label">Log: CONCEPT</div>
-                <p id="quest-explanation" style="margin:0; font-size:14px; color:#ccc; line-height:1.7;"></p>
+        <div id="reservation" class="page-view">
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <h2 style="margin: 0 0 0.5rem 0; color: var(--brown);">Secure Table Booking</h2>
+                <p style="margin: 0; color: #666;">Please complete your allocation sheet details via our server sync panel below:</p>
             </div>
-
-            <div class="box-panel" style="background: #0d0d18;">
-                <div class="panel-label">Log: CODE CODE CONTAINER</div>
-                <pre id="quest-code" class="code-display"></pre>
-            </div>
-
-            <div id="quest-question" style="font-size:16px; font-weight:700;"></div>
-
-            <div id="options-container"></div>
-            <div id="feedback-panel" class="box-panel hidden" style="font-weight:700;"></div>
-
-            <div id="keywords-panel" class="box-panel hidden">
-                <div class="panel-label">🔑 KEYWORDS</div>
-                <div id="keywords-container" class="level-row" style="justify-content: flex-start;"></div>
-            </div>
-
-            <div class="action-container">
-                <button id="action-trigger-btn" class="action-btn" onclick="handleActionClick()"></button>
+            
+            <div class="iframe-wrapper">
+                <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSeliyFwnTdKNdbFBnJK0R5i-PYg_iYHGtXEKcjmWPFyZ2BHTQ/viewform?embedded=true" width="640" height="961" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
             </div>
         </div>
-    </div>
+    </main>
 
-    <div id="summary-screen" class="summary-wrap hidden">
-        <div id="summary-grade" class="grade-label"></div>
-        <h2 style="font-size:40px; margin:0;">Quest Complete</h2>
+    <script>
+        function switchPage(pageId, btnElement) {
+            // Deactivate and hide alternative elements
+            document.querySelectorAll('.page-view').forEach(view => view.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            
+            // Bring target layout block live
+            document.getElementById(pageId).classList.add('active');
+            btnElement.classList.add('active');
+        }
+    </script>
+</body>
+</html>
