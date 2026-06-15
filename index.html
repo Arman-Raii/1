@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Himalayan Kitchen - Assignment Prototype</title>
+    <style>
+        /* Modern CSS Presentation Layer */
+        :root {
+            --brown: #3E2723;
+            --gold: #D4AF37;
+            --paper: #FDFBF7;
+            --text: #2C2520;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--paper);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--brown);
+            border-bottom: 4px solid var(--gold);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        .nav-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo h1 {
+            color: var(--gold);
+            margin: 0;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        nav button {
+            background: none;
+            border: none;
+            color: #FFF;
+            padding: 0.6rem 1rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        nav button.active {
+            color: var(--brown);
+            background-color: var(--gold);
+        }
+
+        main {
+            max-width: 1000px;
+            width: 100%;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            flex: 1;
+            box-sizing: border-box;
+        }
+
+        .page-view {
+            display: none;
+        }
+
+        .page-view.active {
+            display: block;
+        }
+
+        /* Hero / Home Styling */
+        .hero {
+            background: linear-gradient(rgba(62, 39, 35, 0.88), rgba(62, 39, 35, 0.88));
+            padding: 4rem 2rem;
+            border-radius: 8px;
+            text-align: center;
+            color: #FFF;
+            margin-bottom: 2rem;
+        }
+
+        .hero h2 { color: var(--gold); font-size: 2.2rem; margin-top: 0; }
+
+        .btn {
+            background-color: var(--gold);
+            color: var(--brown);
+            border: none;
+            padding: 0.8rem 2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        /* Menu / Gallery Grid Styling */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .card {
+            background: #FFF;
+            padding: 1.5rem;
+            border-radius: 6px;
+            border: 1px solid #EFEAE4;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .placeholder-img {
+            height: 180px;
+            background-color: #DDD;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border-radius: 6px;
+        }
+
+        /* Form Styling */
+        .form-box {
+            max-width: 500px;
+            margin: 0 auto;
+            background: #FFF;
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid #EFEAE4;
+        }
+
+        .form-group { margin-bottom: 1.2rem; }
+        .form-group label { display: block; margin-bottom: 0.4rem; font-weight: 600; }
+        .form-group input { width: 100%; padding: 0.7rem; border: 1px solid #CCD1D9; border-radius: 4px; box-sizing: border-box; }
+
+        /* Dev Console Styling */
+        .console-panel {
+            background-color: #1E1E1E;
+            color: #A5D6A7;
+            font-family: monospace;
+            padding: 1.5rem;
+            margin-top: 3rem;
+            border-top: 4px solid var(--gold);
+        }
+
+        .console-log {
+            height: 100px;
+            overflow-y: auto;
+            background: #121212;
+            padding: 0.8rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-container">
+            <div class="logo"><h1>Himalayan Kitchen</h1></div>
+            <nav>
+                <button class="nav-btn active" onclick="switchPage('home', this)">Home</button>
+                <button class="nav-btn" onclick="switchPage('menu', this)">Menu</button>
+                <button class="nav-btn" onclick="switchPage('gallery', this)">Gallery</button>
+                <button class="nav-btn" onclick="switchPage('reservation', this)">Reservation</button>
+                <button class="nav-btn" onclick="switchPage('contact', this)">Contact</button>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div id="home" class="page-view active">
+            <div class="hero">
+                <h2>Taste the Legacy of the Himalayas</h2>
+                <p>Indulge in authentic local recipes crafted right in the heart of Thamel.</p>
+                <button class="btn" onclick="document.querySelector('[onclick*=\'reservation\']').click()">Book A Table</button>
+            </div>
+        </div>
+
+        <div id="menu" class="page-view">
+            <h2>Our Heritage Menu</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Steamed Chicken Momo</h3>
+                    <p>Traditional parcels served with house sesame-tomato chutney.</p>
+                    <strong style="color: var(--brown)">Rs. 350</strong>
+                </div>
+                <div class="card">
+                    <h3>Thakali Khana Set</h3>
+                    <p>Authentic Nepali thali with lentils, greens, and local ghee rice.</p>
+                    <strong style="color: var(--brown)">Rs. 650</strong>
+                </div>
+            </div>
+        </div>
+
+        <div id="gallery" class="page-view">
+            <h2>Visual Gallery</h2>
+            <div class="grid">
+                <div class="placeholder-img" style="background-color: #8D6E63;">[ image / momo.jpg ]</div>
+                <div class="placeholder-img" style="background-color: #FFB300;">[ image / chowmein.jpg ]</div>
+                <div class="placeholder-img" style="background-color: #A1887F;">[ image / restaurant.jpg ]</div>
+            </div>
+        </div>
+
+        <div id="reservation" class="page-view">
+            <div class="form-box">
+                <h2 style="margin-top:0">Table Reservation Form</h2>
+                <form id="resForm" onsubmit="executeSubmit(event)">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="formName" required placeholder="John Doe">
+                    </div>
+                    <div class="form-group">
+                        <label>Reservation Date</label>
+                        <input type="date" id="formDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Number of Guests</label>
+                        <input type="number" id="formGuests" min="1" value="2" required>
+                    </div>
+                    <button type="submit" class="btn" style="width:100%">Commit Booking</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="contact" class="page-view">
+            <h2>Connect With Our Staff</h2>
+            <p><strong>Location:</strong> Chaksibari Marg, Thamel, Kathmandu, Nepal</p>
+            <p><strong>Phone:</strong> +977-1-4215678</p>
+        </div>
+    </main>
+
+    <section class="console-panel">
+        <div style="margin-bottom: 0.5rem; font-weight: bold; display: flex; justify-content: space-between;">
+            <span>🖥️ Execution Runtime Monitor (XAMPP Emulation)</span>
+            <span style="color: var(--gold)">Status: Bound to Port 3306</span>
+        </div>
+        <div class="console-log" id="consoleTerminal">
+            [System] Database connection 'himalayan_kitchen' established dynamically.<br>
+            [System] Prepared statement mapping structures initialized successfully.
+        </div>
+    </section>
+
+    <script>
+        function logMessage(msg) {
+            const terminal = document.getElementById('consoleTerminal');
+            terminal.innerHTML += `<br>> ${msg}`;
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        function switchPage(pageId, btnElement) {
+            // Hide all views
+            document.querySelectorAll('.page-view').forEach(view => view.classList.remove('active'));
+            // Deactivate all buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            
+            // Activate current
+            document.getElementById(pageId).classList.add('active');
+            btnElement.classList.add('active');
+            
+            logMessage(`Navigation routing mapped view layer state to: '${pageId}'`);
+        }
+
+        function executeSubmit(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('formName').value;
+            const date = new Date(document.getElementById('formDate').value);
+            const guests = document.getElementById('formGuests').value;
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            date.setHours(0,0,0,0);
+
+            if (date < today) {
+                logMessage(`🛑 [JS Validation Error] System blocked past date parameter choice.`);
+                alert("Validation Error: Booking dates cannot be in the past!");
+                return;
+            }
+
+            logMessage(`📩 [POST] Outgoing form payload bound data context: name="${name}"`);
+            logMessage(`🔐 [PHP] Prepared Statement: INSERT INTO reservations (name, date, guests) VALUES (?, ?, ?)`);
+            logMessage(`💾 [SQL] Commit complete. Primary key row committed to memory.`);
+            
+            alert("Success! Check the dark terminal window at the bottom to see your database commands execute!");
+            document.getElementById('resForm').reset();
+        }
+    </script>
+</body>
+</html>
